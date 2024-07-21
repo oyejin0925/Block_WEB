@@ -4,7 +4,7 @@ import "../assets/font/pretendard.css";
 import money from "../assets/img/money.png";
 
 const MyPoint = () => {
-  return (
+    return (
     <Container>
         <PointContainer>
             <PointSummary>
@@ -65,9 +65,13 @@ const PointContainer = styled.div `
 const PointSummary = styled.div `
     background-color: white;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     border-radius: 20px;
+
+    @media screen and (max-width: 950px) {
+        flex-direction: column;
+    }
 `;
 const PointHistory = styled.div `
     background-color: white;

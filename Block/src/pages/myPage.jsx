@@ -1,5 +1,4 @@
-import React, {useState} from "react";
-// import { Link } from "react-router-dom"; // Link 컴포넌트 import
+import React, {useState, useRef, useEffect} from "react";
 import styled from "styled-components";
 import "../assets/font/pretendard.css";
 import profileImg from "../assets/img/profile-img.jpg";
@@ -29,107 +28,156 @@ const MyPage = () => {
     const [showMyPoint, setShowMyPoint] = useState(false);
     const [showSavedContest, setShowSavedContest] = useState(false);
     const [showMatching, setShowMatching] = useState(false);
-  
-    const handleModifyProfile = () => {
-      setShowModifyProfile(!showModifyProfile);
-      setShowMyPoint(false);
-      setShowSavedContest(false);
-      setShowMatching(false);
-      console.log('프로필 수정 클릭됨');
-    };
-  
-    const handleMyPoint = () => {
-      setShowMyPoint(!showMyPoint);
-      setShowModifyProfile(false);
-      setShowSavedContest(false);
-      setShowMatching(false);
-      console.log('내 포인트 클릭됨');
-    };
-  
-    const handleSavedContest = () => {
-      setShowSavedContest(!showSavedContest);
-      setShowModifyProfile(false);
-      setShowMyPoint(false);
-      setShowMatching(false);
-      console.log('저장한 공모전 클릭됨');
-    };
-  
-    const handleMatching = () => {
-      setShowMatching(!showMatching);
-      setShowModifyProfile(false);
-      setShowMyPoint(false);
-      setShowSavedContest(false);
-      console.log('about 매칭 클릭됨');
-    };
-  
-    return (
-    <Container>
-        <h2 style={{textAlign:"center", fontFamily:"Pretendard-Bold", paddingTop: '30px'}}>마이페이지</h2>
-        <ProfileContainer>
-            <div className="user-profile">
-                <img className="profile-img" src={profileImg} />
-                <p><span style={{fontFamily: "Pretendard-Bold"}}>사용자</span><span> 님</span></p>
-                <img className="login-type" src={login_type1} style={{width: "222px"}}/>
-            </div>
-            <div className='profile-info'>
-                <div className="school">
-                    <img className="school-img" src={profile_school} />
-                    <p>숭실대학교</p>
-                </div>
-                <div className="major">
-                    <img className="major-img" src={profile_major} />
-                    <p>글로벌미디어학부</p>
-                </div>
-                <div className="category">
-                    <img className="category-img" src={profile_like} />
-                    <img className="category-design" src={choice_design} />
-                    <img className="category-marketing" src={choice_marketing} />
-                    <img className="category-media" src={choice_media} />
-                </div>
-            </div>
-        </ProfileContainer>
-        <OptionContainer>
-          <button type="button" className="modifyProfile" onClick={handleModifyProfile}>
-            <img
-              className="option-modifyProfile"
-              src={showModifyProfile ? optionClicked_modifyProfile : option_modifyProfile}
-            />
-          </button>
-          <button type="button" className="myPoint" onClick={handleMyPoint}>
-            <img
-              className="option-myPoint"
-              src={showMyPoint ? optionClicked_point : option_point}
-            />
-          </button>
-          <button type="button" className="savedContest" onClick={handleSavedContest}>
-            <img
-              className="option-savedContest"
-              src={showSavedContest ? optionClicked_savedContest : option_savedContest}
-            />
-          </button>
-          <button type="button" className="matching" onClick={handleMatching}>
-            <img
-              className="option-matching"
-              src={showMatching ? optionClicked_matching : option_matching}
-            />
-          </button>
-        </OptionContainer>
-        <OptionContent>
-          {showModifyProfile && <ModifyProfile />}
-          {showMyPoint && <MyPoint />}
-          {showSavedContest && <SavedContest />}
-          {showMatching && <AboutMatching />}
-        </OptionContent>
-      </Container>
-    );
-  };
-  
+    const [allOptionsHidden, setAllOptionsHidden] = useState(true);
 
-const Container = styled.div `
+    const modifyProfileRef = useRef(null);
+    const myPointRef = useRef(null);
+    const savedContestRef = useRef(null);
+    const matchingRef = useRef(null);
+    const optionContainerHeight = 72;
+
+    useEffect(() => {
+        const adjustScroll = (ref) => {
+            if (ref.current) {
+                const offsetTop = ref.current.offsetTop - optionContainerHeight;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth',
+                });
+            }
+        };
+
+        if (showModifyProfile) {
+            adjustScroll(modifyProfileRef);
+        } else if (showMyPoint) {
+            adjustScroll(myPointRef);
+        } else if (showSavedContest) {
+            adjustScroll(savedContestRef);
+        } else if (showMatching) {
+            adjustScroll(matchingRef);
+        }
+    }, [showModifyProfile, showMyPoint, showSavedContest, showMatching]);
+
+    useEffect(() => {
+        setAllOptionsHidden(
+            !showModifyProfile && !showMyPoint && !showSavedContest && !showMatching
+        );
+    }, [showModifyProfile, showMyPoint, showSavedContest, showMatching]);
+
+    const handleModifyProfile = () => {
+        setShowModifyProfile(!showModifyProfile);
+        setShowMyPoint(false);
+        setShowSavedContest(false);
+        setShowMatching(false);
+        console.log('Profile modification clicked');
+    };
+
+    const handleMyPoint = () => {
+        setShowMyPoint(!showMyPoint);
+        setShowModifyProfile(false);
+        setShowSavedContest(false);
+        setShowMatching(false);
+        console.log('My points clicked');
+    };
+
+    const handleSavedContest = () => {
+        setShowSavedContest(!showSavedContest);
+        setShowModifyProfile(false);
+        setShowMyPoint(false);
+        setShowMatching(false);
+        console.log('Saved contests clicked');
+    };
+
+    const handleMatching = () => {
+        setShowMatching(!showMatching);
+        setShowModifyProfile(false);
+        setShowMyPoint(false);
+        setShowSavedContest(false);
+        console.log('About matching clicked');
+    };
+
+    return (
+        <Container allOptionsHidden={allOptionsHidden}>
+            <h2 style={{textAlign:"center", fontFamily:"Pretendard-Bold", paddingTop: '30px'}}>마이페이지</h2>
+            <ProfileContainer>
+                <div className="user-profile">
+                    <img className="profile-img" src={profileImg} alt="Profile"/>
+                    <p><span style={{fontFamily: "Pretendard-Bold"}}>사용자</span><span> 님</span></p>
+                    <img className="login-type" src={login_type1} alt="Login type" style={{width: "222px"}}/>
+                </div>
+                <div className='profile-info'>
+                    <div className="school">
+                        <img className="school-img" src={profile_school} alt="School"/>
+                        <p>숭실대학교</p>
+                    </div>
+                    <div className="major">
+                        <img className="major-img" src={profile_major} alt="Major"/>
+                        <p>글로벌미디어학부</p>
+                    </div>
+                    <div className="category">
+                        <img className="category-img" src={profile_like} alt="Category"/>
+                        <img className="category-design" src={choice_design} alt="Design"/>
+                        <img className="category-marketing" src={choice_marketing} alt="Marketing"/>
+                        <img className="category-media" src={choice_media} alt="Media"/>
+                    </div>
+                </div>
+            </ProfileContainer>
+            <OptionContainer>
+                <button type="button" className="modifyProfile" onClick={handleModifyProfile}>
+                    <img
+                        className="option-modifyProfile"
+                        src={showModifyProfile ? optionClicked_modifyProfile : option_modifyProfile}
+                        alt="Modify Profile"
+                    />
+                </button>
+                <button type="button" className="myPoint" onClick={handleMyPoint}>
+                    <img
+                        className="option-myPoint"
+                        src={showMyPoint ? optionClicked_point : option_point}
+                        alt="My Point"
+                    />
+                </button>
+                <button type="button" className="savedContest" onClick={handleSavedContest}>
+                    <img
+                        className="option-savedContest"
+                        src={showSavedContest ? optionClicked_savedContest : option_savedContest}
+                        alt="Saved Contest"
+                    />
+                </button>
+                <button type="button" className="matching" onClick={handleMatching}>
+                    <img
+                        className="option-matching"
+                        src={showMatching ? optionClicked_matching : option_matching}
+                        alt="Matching"
+                    />
+                </button>
+            </OptionContainer>
+            <OptionContent>
+                <div ref={modifyProfileRef}>
+                    {showModifyProfile && <ModifyProfile />}
+                </div>
+                <div ref={myPointRef}>
+                    {showMyPoint && <MyPoint />}
+                </div>
+                <div ref={savedContestRef}>
+                    {showSavedContest && <SavedContest />}
+                </div>
+                <div ref={matchingRef}>
+                    {showMatching && <AboutMatching />}
+                </div>
+            </OptionContent>
+        </Container>
+    );
+};
+
+const Container = styled.div`
     font-family: Pretendard-Regular;
     font-size: 28px;
+    overflow-x: hidden;
+    overflow-y: ${props => props.allOptionsHidden ? 'hidden' : 'auto'};
 `;
-const ProfileContainer = styled.div `
+
+const ProfileContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -177,16 +225,22 @@ const ProfileContainer = styled.div `
         align-items: center;
     }
 `;
-const OptionContainer = styled.div `
+
+const OptionContainer = styled.div`
+    position: sticky;
+    top: 0;
     height: 72px;
     align-items: center;
     text-align: center;
+    background-color: #fff; 
+    z-index: 100; 
     button {
         background: none;
         border: none;
     }
 `;
-const OptionContent = styled.div `
+
+const OptionContent = styled.div`
 `;
 
 export default MyPage;
